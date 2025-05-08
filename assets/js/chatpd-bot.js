@@ -5,6 +5,18 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+function mostrarRespuestaEnChat(mensaje) {
+    const chatbox = document.getElementById('chat-content');
+    if (!chatbox) return;
+
+    const div = document.createElement('div');
+    div.style = 'background:#eef;padding:8px;margin:5px 0;border-radius:5px;';
+    div.innerHTML = `<strong>Bot:</strong> ${mensaje}`;
+    chatbox.appendChild(div);
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const btn = document.getElementById("chatbot-button");
     const box = document.getElementById("chatbot-box");

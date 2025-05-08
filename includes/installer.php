@@ -8,6 +8,8 @@ function chatpd_install_database()
     $charset_collate = $wpdb->get_charset_collate();
     $table_prefix = $wpdb->prefix;
 
+    $config_table = "{$table_prefix}chatpd_config";
+
     $tables = [
 
         "{$table_prefix}chatpd_config" => "
@@ -61,13 +63,25 @@ function chatpd_install_database()
     foreach ($tables as $sql) {
         dbDelta($sql);
     }
-}
 
-$columns = $wpdb->get_results("SHOW COLUMNS FROM $config_table LIKE 'timeout_warning'");
-if (empty($columns)) {
-    $wpdb->query("ALTER TABLE $config_table ADD COLUMN timeout_warning INT DEFAULT 60");
-}
-$columns = $wpdb->get_results("SHOW COLUMNS FROM $config_table LIKE 'timeout_end'");
-if (empty($columns)) {
-    $wpdb->query("ALTER TABLE $config_table ADD COLUMN timeout_end INT DEFAULT 300");
+    // Asegurar columnas nuevas en la tabla de configuración
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM $config_table LIKE 'timeout_warning'");
+    if (empty($columns)) {
+        $wpdb->query("ALTER TABLE $config_table ADD COLUMN timeout_warning INT DEFAULT 60");
+    }
+
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM $config_table LIKE 'timeout_end'");
+    if (empty($columns)) {
+        $wpdb->query("ALTER TABLE $config_table ADD COLUMN timeout_end INT DEFAULT 300");
+    }
+
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM $config_table LIKE 'bot_name'");
+    if (empty($columns)) {
+        $wpdb->query("ALTER TABLE $config_table ADD COLUMN bot_name VARCHAR(255) DEFAULT 'Asistente ChatPD'");
+    }
+
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM $config_table LIKE 'chat_color'");
+    if (empty($columns)) {
+        $wpdb->query("ALTER TABLE $config_table ADD COLUMN chat_color  VARCHAR(255) DEFAULT '#25d366'");
+    }
 }

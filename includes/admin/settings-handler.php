@@ -15,6 +15,8 @@ function chatpd_save_settings()
 
     $business_type = sanitize_text_field($_POST['business_type']);
     $language      = sanitize_text_field($_POST['language']);
+    $bot_name      = sanitize_text_field($_POST['bot_name']);
+    $chat_color    = sanitize_text_field($_POST['chat_color']);
     
 
     $data = [
@@ -22,6 +24,8 @@ function chatpd_save_settings()
         'language'          => $language,
         'timeout_warning'   => isset($_POST['timeout_warning']) ? intval($_POST['timeout_warning']) : 60,
         'timeout_end'       => isset($_POST['timeout_end']) ? intval($_POST['timeout_end']) : 300,
+        'bot_name'          => $bot_name,
+        'chat_color'        => $chat_color,
         'updated_at'        => current_time('mysql'),
     ];
 
