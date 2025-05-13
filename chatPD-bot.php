@@ -35,6 +35,13 @@ function chatpd_enqueue_scripts()
         true
     );
 
+    wp_enqueue_style(
+        'chatpd-style-css',
+        plugin_dir_url(__FILE__) . 'assets/css/main.css',
+        [],
+        '1.0'
+    );
+
     wp_localize_script('chatpd-bot-js', 'chatpd_ajax', [
         'ajax_url'          => admin_url('admin-ajax.php'),
         'nonce'             => wp_create_nonce('chatpd_nonce'),

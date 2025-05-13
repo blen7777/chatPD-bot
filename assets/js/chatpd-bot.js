@@ -16,6 +16,24 @@ function mostrarRespuestaEnChat(mensaje) {
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
+// Capturar clics en enlaces interactivos
+// incluso si están anidados dentro de otros divs
+
+document.addEventListener("click", function (e) {
+    if (
+        e.target.tagName === "A" &&
+        e.target.closest("#chat-content") &&
+        !e.target.classList.contains("no-simular-submit")
+    ) {
+        e.preventDefault();
+        const texto = e.target.innerText.trim();
+        const input = document.getElementById("chat-input");
+
+        input.value = texto;
+        const form = document.getElementById("chat-form");
+        form.dispatchEvent(new Event("submit"));
+    }
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     const btn = document.getElementById("chatbot-button");
@@ -43,32 +61,51 @@ document.addEventListener("DOMContentLoaded", function () {
             input.disabled = true;
         }, endTime);
     }
-   
 
     if (!btn || !box || !form || !input || !chat) return;
 
-   btn.addEventListener("click", () => {
-    const estaVisible = box.style.display === "block";
-    box.style.display = estaVisible ? "none" : "block";
+    btn.addEventListener("click", () => {
+        const estaVisible = box.style.display === "block";
+        box.style.display = estaVisible ? "none" : "block";
 
-    // Mostrar saludo inicial si se abre por primera vez
-    if (!estaVisible && !primerSaludoMostrado) {
-        const saludo = "🤖¡Hola! Bienvenido 😊";
-        chat.innerHTML += `<div style="background:#eef;padding:8px;margin:5px 0;border-radius:5px;"><strong>Bot:</strong> ${saludo}</div>`;
-        chat.scrollTop = chat.scrollHeight;
-        primerSaludoMostrado = true;
-    }
-});
+        // Ejecutar mensaje inicial simulando submit
+        if (!estaVisible && !primerSaludoMostrado) {
+            const saludo = "🤖 ¡Hola! Soy tu asistente. ¿En qué puedo ayudarte?";
+            mostrarRespuestaEnChat(saludo);
+        
+            const opciones = `
+                <div style="margin-top: 10px;">
+                    <a href="#" class="chatpd-opcion">🛒 Ver productos disponibles</a><br>
+                    <a href="#" class="chatpd-opcion">📦 ¿Cómo funcionan los envíos?</a><br>
+                    <a href="#" class="chatpd-opcion">🧾 Quiero hacer un pedido personalizado</a><br>
+                    <a href="https://wa.me/50369630252?text=Me brinda información de productos" target="_blank" class="no-simular-submit">💬 Contactar por WhatsApp</a>
+                </div>
+            `;
+            mostrarRespuestaEnChat(opciones);
+        
+            primerSaludoMostrado = true;
+        }
+    });
 
     form.addEventListener("submit", function (e) {
         e.preventDefault();
         iniciarTemporizadores();
+
         const mensaje = input.value.trim();
         if (!mensaje) return;
 
         chat.innerHTML += `<div style="text-align:right;margin:5px 0;"><strong>Tú:</strong> ${mensaje}</div>`;
         input.value = "";
 
+        if (mensaje.toLowerCase().includes("pedido personalizado")) {
+            const textoInfo = `
+                Podemos ayudarte a traer productos de tiendas como <strong>Shein</strong> o <strong>Temu</strong> 🛍️<br><br>
+                Para pedidos especiales, escríbenos directamente:
+                <a href="https://wa.me/50369630252?text=Necesito hacer un pedido de Shein o TEMU" target="_blank" class="no-simular-submit">💬 Enviar mensaje por WhatsApp</a>`;
+            mostrarRespuestaEnChat(textoInfo);
+            return; // Cancela el submit normal
+        }
+        
         fetch(chatpd_ajax.ajax_url, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -76,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 action: "chatpd_ask",
                 nonce: chatpd_ajax.nonce,
                 pregunta: mensaje,
-                session_id: getCookie('chatpd_session_id')
+                session_id: getCookie("chatpd_session_id")
             })
         })
         .then(res => res.json())
@@ -86,37 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     /(https?:\/\/[^\s]+)/g,
                     '<a href="$1" target="_blank" style="color:#25d366;">$1</a>'
                 );
-                chat.innerHTML += `<div style="background:#eef;padding:8px;margin:5px 0;border-radius:5px;"><strong>Bot:</strong> ${botMessage}</div>`;
-
-                if (botMessage.includes("¿En qué puedo ayudarte hoy?")) {
-                    const quickReplies = document.createElement("div");
-                    quickReplies.innerHTML = `
-                        <div style="margin-top: 10px;">
-                            <button class="chatpd-btn" data-msg="Ver productos disponibles">🛒 Ver productos</button>
-                            <button class="chatpd-btn" data-msg="¿Cómo funcionan los envíos?">📦 Información de envíos</button>
-                            <button class="chatpd-btn" data-msg="Quiero hacer un pedido personalizado">🧾 Pedido personalizado</button>
-                            <a href="https://wa.me/50369630252" target="_blank" style="text-decoration:none;">
-                                <button class="chatpd-btn">💬 Contactar por WhatsApp</button>
-                            </a>
-                        </div>
-                    `;
-                    chat.appendChild(quickReplies);
-
-                    // Estilos y eventos para botones rápidos
-                    quickReplies.querySelectorAll(".chatpd-btn").forEach(btn => {
-                        btn.style.margin = "5px";
-                        btn.style.padding = "5px 10px";
-                        btn.style.border = "none";
-                        btn.style.borderRadius = "6px";
-                        btn.style.background = "#25d366";
-                        btn.style.color = "#fff";
-                        btn.style.cursor = "pointer";
-                        btn.addEventListener("click", function () {
-                            input.value = btn.dataset.msg;
-                            form.dispatchEvent(new Event("submit"));
-                        });
-                    });
-                }
+                mostrarRespuestaEnChat(botMessage);
 
                 chat.scrollTop = chat.scrollHeight;
             } else {
@@ -128,10 +135,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-
-// ✅ Paso 1: Mostrar formulario de pedido en el chat
-
-// Añade esto al final de tu archivo chatpd-bot.js
 
 function mostrarFormularioPedido() {
     const chatbox = document.getElementById('chat-content');
@@ -177,8 +180,7 @@ function enviarPedidoCliente() {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            mostrarRespuestaEnChat(🎉 "¡Pedido enviado! Nos pondremos en contacto contigo pronto."
-            );
+            mostrarRespuestaEnChat("¡Pedido enviado! Nos pondremos en contacto contigo pronto.");
             document.getElementById('formulario-pedido').remove();
         } else {
             mostrarRespuestaEnChat('⚠️ Hubo un error al enviar el pedido. Intenta de nuevo.');
