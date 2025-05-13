@@ -128,3 +128,60 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+// ✅ Paso 1: Mostrar formulario de pedido en el chat
+
+// Añade esto al final de tu archivo chatpd-bot.js
+
+function mostrarFormularioPedido() {
+    const chatbox = document.getElementById('chat-content');
+
+    const formHtml = `
+        <div id="formulario-pedido" style="margin-top:10px;padding:10px;border:1px solid #ccc;border-radius:8px;background:#f9f9f9;">
+            <strong>📅 Completa tu pedido:</strong><br><br>
+            <label>Nombre:<br><input type="text" id="pedido-nombre" style="width:100%;margin-bottom:6px;" /></label>
+            <label>Teléfono:<br><input type="text" id="pedido-telefono" style="width:100%;margin-bottom:6px;" /></label>
+            <label>Dirección:<br><textarea id="pedido-direccion" style="width:100%;margin-bottom:6px;"></textarea></label>
+            <label>Producto deseado:<br><input type="text" id="pedido-producto" style="width:100%;margin-bottom:6px;" /></label>
+            <button onclick="enviarPedidoCliente()" style="background:#25d366;color:#fff;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;">Enviar pedido</button>
+        </div>
+    `;
+
+    chatbox.innerHTML += formHtml;
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+function enviarPedidoCliente() {
+    const nombre = document.getElementById('pedido-nombre').value.trim();
+    const telefono = document.getElementById('pedido-telefono').value.trim();
+    const direccion = document.getElementById('pedido-direccion').value.trim();
+    const producto = document.getElementById('pedido-producto').value.trim();
+
+    if (!nombre || !telefono || !direccion || !producto) {
+        alert('Por favor completa todos los campos.');
+        return;
+    }
+
+    fetch(chatpd_ajax.ajax_url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            action: 'chatpd_send_order',
+            nonce: chatpd_ajax.nonce,
+            nombre,
+            telefono,
+            direccion,
+            producto
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            mostrarRespuestaEnChat(🎉 "¡Pedido enviado! Nos pondremos en contacto contigo pronto."
+            );
+            document.getElementById('formulario-pedido').remove();
+        } else {
+            mostrarRespuestaEnChat('⚠️ Hubo un error al enviar el pedido. Intenta de nuevo.');
+        }
+    });
+}
