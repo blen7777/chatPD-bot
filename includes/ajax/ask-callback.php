@@ -33,18 +33,21 @@ function chatpd_ask_callback()
         'limit' => 3,
         's' => $pregunta,
     ]);
-
+    
     if (!empty($productos)) {
-        $info = "\nAquí tienes algunas opciones que encontramos:\n\n";
+        $info = "<br>Aquí tienes algunas opciones que encontramos:<br><br>";
         foreach ($productos as $p) {
-            $nombre = $p->get_name();
-            $precio = wc_price($p->get_price());
-            $url = get_permalink($p->get_id());
-            $info .= "- $nombre ($precio) → $url\n";
+            $nombre = esc_html($p->get_name());
+            $precio = strip_tags(wc_price($p->get_price()));
+            $url    = esc_url(get_permalink($p->get_id()));
+    
+            $info .= "🔹 {$nombre} ({$precio})<br>";
+            $info .= "🔗 Ver producto: $url<br><br>";
         }
-
+    
         wp_send_json_success($info);
-    } else {
+    }
+    else {
         $respuesta = "No encontramos productos relacionados con *$pregunta*.
 Puedes intentar con otro nombre o enviarnos el enlace del producto desde Shein o Temu para ayudarte a traerlo.
 También puedes contactarnos por WhatsApp: https://wa.me/50369630252";

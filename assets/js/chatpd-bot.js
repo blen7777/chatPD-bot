@@ -11,13 +11,10 @@ function mostrarRespuestaEnChat(mensaje) {
 
     const div = document.createElement('div');
     div.style = 'background:#eef;padding:8px;margin:5px 0;border-radius:5px;';
-    div.innerHTML = `<strong>Bot:</strong> ${mensaje}`;
+    div.innerHTML = `<strong>Bot:</strong> ${mensaje}`; // debe usar innerHTML
     chatbox.appendChild(div);
     chatbox.scrollTop = chatbox.scrollHeight;
 }
-
-// Capturar clics en enlaces interactivos
-// incluso si están anidados dentro de otros divs
 
 document.addEventListener("click", function (e) {
     if (
@@ -97,13 +94,19 @@ document.addEventListener("DOMContentLoaded", function () {
         chat.innerHTML += `<div style="text-align:right;margin:5px 0;"><strong>Tú:</strong> ${mensaje}</div>`;
         input.value = "";
 
+        if (mensaje.toLowerCase().includes("funcionan los envíos")) {
+            const textoInfo = `Nuestros envios son personalizados a todo el pais por un costo de $3 dolares por envio.Entregamos en menos de 48 horas.`;
+            mostrarRespuestaEnChat(textoInfo);
+            return; 
+        }
+
         if (mensaje.toLowerCase().includes("pedido personalizado")) {
             const textoInfo = `
                 Podemos ayudarte a traer productos de tiendas como <strong>Shein</strong> o <strong>Temu</strong> 🛍️<br><br>
                 Para pedidos especiales, escríbenos directamente:
                 <a href="https://wa.me/50369630252?text=Necesito hacer un pedido de Shein o TEMU" target="_blank" class="no-simular-submit">💬 Enviar mensaje por WhatsApp</a>`;
             mostrarRespuestaEnChat(textoInfo);
-            return; // Cancela el submit normal
+            return; 
         }
         
         fetch(chatpd_ajax.ajax_url, {
@@ -121,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
                 const botMessage = data.data.replace(
                     /(https?:\/\/[^\s]+)/g,
-                    '<a href="$1" target="_blank" style="color:#25d366;">$1</a>'
+                    '<a href="$1" target="_blank" class="no-simular-submit" style="color:#25d366;">$1</a>'
                 );
                 mostrarRespuestaEnChat(botMessage);
 
