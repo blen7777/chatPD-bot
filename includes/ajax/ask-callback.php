@@ -33,24 +33,28 @@ function chatpd_ask_callback()
         'limit' => 3,
         's' => $pregunta,
     ]);
-    
+
     if (!empty($productos)) {
         $info = "<br>Aquí tienes algunas opciones que encontramos:<br><br>";
         foreach ($productos as $p) {
             $nombre = esc_html($p->get_name());
-            $precio = strip_tags(wc_price($p->get_price()));
-            $url    = esc_url(get_permalink($p->get_id()));
-    
-            $info .= "🔹 {$nombre} ({$precio})<br>";
-            $info .= "🔗 Ver producto: $url<br><br>";
+            $precio = wc_price($p->get_price());
+            $url    = get_permalink($p->get_id());
+
+            $link = sprintf(
+                '<a href="%s" target="_blank" style="display:inline-block;background:#25d366;color:#fff;padding:6px 10px;border-radius:5px;text-decoration:none;margin-top:4px;" class="no-simular-submit">Ver producto</a>',
+                $url
+            );
+
+            $info .= "🔹 <strong>{$nombre}</strong> ({$precio})<br>{$link}<br>";
         }
-    
+
         wp_send_json_success($info);
-    }
-    else {
-        $respuesta = "No encontramos productos relacionados con *$pregunta*.
-Puedes intentar con otro nombre o enviarnos el enlace del producto desde Shein o Temu para ayudarte a traerlo.
-También puedes contactarnos por WhatsApp: https://wa.me/50369630252";
+    } else {
+        $respuesta = "No encontramos productos relacionados con <strong>$pregunta</strong>.<br>
+Puedes intentar con otro nombre o enviarnos el enlace del producto desde <strong>Shein</strong> o <strong>Temu</strong> para ayudarte a traerlo.<br>
+También puedes contactarnos por WhatsApp aquí:<br>
+<a href=\"https://wa.me/50369630252\" target=\"_blank\" class=\"no-simular-submit\" style=\"color:#25d366;\">💬 Abrir WhatsApp</a>";
 
         wp_send_json_success($respuesta);
     }

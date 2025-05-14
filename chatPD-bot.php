@@ -16,6 +16,7 @@ if (is_admin()) {
 // Cargar archivo de instalación
 require_once plugin_dir_path(__FILE__) . 'includes/installer.php';
 require_once plugin_dir_path(__FILE__) . 'includes/ajax/ask-callback.php';
+require_once plugin_dir_path(__FILE__) . 'includes/ajax/send-order.php';
 require_once plugin_dir_path(__FILE__) . 'includes/session/session-manager.php';
 require_once plugin_dir_path(__FILE__) . 'includes/admin/training-handler.php';
 
