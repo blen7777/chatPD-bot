@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
 
 if (is_admin()) {
     require_once plugin_dir_path(__FILE__) . 'includes/admin/settings-handler.php';
-    require_once plugin_dir_path(__FILE__) . 'includes/admin/admin-menu.php'; 
+    require_once plugin_dir_path(__FILE__) . 'includes/admin/admin-menu.php';
 }
 
 // Cargar archivo de instalación
@@ -60,19 +60,20 @@ function chatpd_bot_html()
     $chat_color = esc_attr($config->chat_color ?? '#25d366');
     $bot_name   = esc_html($config->bot_name ?? 'Asistente ChatPD');
 ?>
-    <div id="chatbot-button" style="position:fixed;bottom:20px;right:20px;background:#25d366;color:white;padding:15px;border-radius:50%;cursor:pointer;z-index:9999;">
-        💬
+    <div id="chatbot-button" style="position:fixed;bottom:20px;right:20px;width:60px;height:60px;background:#25d366;border-radius:50%;cursor:pointer;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+        <img src="<?php echo plugin_dir_url(__FILE__) . 'assets/img/avatar.png'; ?>" alt="ChatPD Bot" style="width:100%;height:auto;" />
     </div>
 
     <div id="chatbot-box" style="display:none;position:fixed;bottom:80px;right:20px;width:300px;height:400px;background:white;border:1px solid #ccc;z-index:9999;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.3);overflow:hidden;">
-    <div style="background:<?php echo $chat_color; ?>;padding:10px;color:white;font-weight:bold;">
-        <?php echo $bot_name; ?>
-    </div>
+        <div style="background:<?php echo $chat_color; ?>;padding:10px;color:white;font-weight:bold;">
+            <?php echo $bot_name; ?>
+        </div>
+        <div id="chatbot-close" style="position:absolute;top:5px;right:8px;cursor:pointer;font-size:18px;color:white;">✖</div>
         <div id="chat-content" style="padding:10px;height:300px;overflow-y:auto;font-size:14px;"></div>
         <form id="chat-form" style="display:flex;padding:10px;border-top:1px solid #ccc;">
             <input type="text" id="chat-input" style="flex:1;padding:5px;" placeholder="Escribe tu consulta..." required />
-            <div id="chatbot-button" style="position:fixed;bottom:20px;right:20px;background:<?php echo $chat_color; ?>;color:white;padding:15px;border-radius:50%;cursor:pointer;z-index:9999;">
-                💬
+            <div id="chatbot-button" style="position:fixed;bottom:20px;right:20px;width:60px;height:60px;background:#25d366;border-radius:50%;cursor:pointer;z-index:9999;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                <img src="<?php echo plugin_dir_url(__FILE__) . 'assets/img/avatar.png'; ?>" alt="ChatPD Bot" style="width:100%;height:auto;" />
             </div>
         </form>
     </div>

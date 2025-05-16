@@ -230,3 +230,7 @@ document.addEventListener("click", function (e) {
         mostrarFormularioPedido();
     }
 });
+
+document.getElementById("chatbot-close").addEventListener("click", function () {
+    document.getElementById("chatbot-box").style.display = "none";
+});
